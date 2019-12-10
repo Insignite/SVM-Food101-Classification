@@ -1,13 +1,91 @@
-# SVM Food101 Dataset Classification
+# SVM Food-101 Dataset Classification
+
+This project is my part taken from the main project github [food_classification](https://github.com/floxyao/food_classification). I've done two deep learning algorithm, [SSD Inception v2 for Card 9-A Object Detection](https://github.com/Insignite/TensorFlow-Object-Detection-API) and [AlexNet architecture for DogvsCat Classification](https://github.com/Insignite/Alexnet-DogvsCat-Classification), so I would like to dive deeper into Machine learning field by working on an algorithm even earlier than AlexNet. Support Vector Machines (SVM) for multiclasses classification seems fun so I decided to go with it.
 
 ## Introduction
 **Support Vector Machines (SVM)** is a supervised learning model with associated algorithms that analyzes data by plotting data points on N-dimensionals graph (N is the number of features) and performs classification by drawing an optimal hyperplane. Data points that closer to the hyperplane influence the position and the orientation of the hyperplane. With this information, we can optimize the hyperplane by fine tuning **Cost (C)** and **Gradient (g = gamma substitute variable)**. Large **C** decreases the margin of the hyperplane, which allow much less misclassified points and lead to hyperplane attemp to fit as many point as possible, where as small **C** allows more generalization and smoother hyperplane. For **g**, a higher value leads to a lower Ecludien distance between data points and scale down fit area.
 
 
+## Dataset
+[Food-101](http://data.vision.ee.ethz.ch/cvl/food-101.tar.gz) is a large dataset consist of 1000 images for 101 type of food. Each images have a range of dimension from 318x318 to 512x512.
 
+For linux user, extract the download dataset. For windows user, just use compress file extractor like WinRAR.
+```
+tar xzvf food-101.tar.gz
+```
+
+#### Dataset structure
+```
+food-101
+  |_ images
+      |_ ***CLASSES FOLDER***
+          |_ ***IMAGE BELONG TO THE PARENT CLASSES***
+  |_ meta
+      |_ classes.txt
+      |_train.json
+      |_ train.txt
+      |_ test.json
+      |_ test.txt
+      |_ labels.txt
+  |_ license_agreement.txt
+  |_ README.txt
+```
+#### Dataset classes
+```
+apple_pie	    eggs_benedict	     onion_rings
+baby_back_ribs	    escargots		     oysters
+baklava		    falafel		     pad_thai
+beef_carpaccio	    filet_mignon	     paella
+beef_tartare	    fish_and_chips	     pancakes
+beet_salad	    foie_gras		     panna_cotta
+beignets	    french_fries	     peking_duck
+bibimbap	    french_onion_soup	     pho
+bread_pudding	    french_toast	     pizza
+breakfast_burrito   fried_calamari	     pork_chop
+bruschetta	    fried_rice		     poutine
+caesar_salad	    frozen_yogurt	     prime_rib
+cannoli		    garlic_bread	     pulled_pork_sandwich
+caprese_salad	    gnocchi		     ramen
+carrot_cake	    greek_salad		     ravioli
+ceviche		    grilled_cheese_sandwich  red_velvet_cake
+cheesecake	    grilled_salmon	     risotto
+cheese_plate	    guacamole		     samosa
+chicken_curry	    gyoza		     sashimi
+chicken_quesadilla  hamburger		     scallops
+chicken_wings	    hot_and_sour_soup	     seaweed_salad
+chocolate_cake	    hot_dog		     shrimp_and_grits
+chocolate_mousse    huevos_rancheros	     spaghetti_bolognese
+churros		    hummus		     spaghetti_carbonara
+clam_chowder	    ice_cream		     spring_rolls
+club_sandwich	    lasagna		     steak
+crab_cakes	    lobster_bisque	     strawberry_shortcake
+creme_brulee	    lobster_roll_sandwich    sushi
+croque_madame	    macaroni_and_cheese      tacos
+cup_cakes	    macarons		     takoyaki
+deviled_eggs	    miso_soup		     tiramisu
+donuts		    mussels		     tuna_tartare
+dumplings	    nachos		     waffles
+edamame		    omelette
+```
+
+In this project, I will only do classification for noodle as I have limited resource for training and testing. There are 5 noodle classes total:
+```
+['pad_thai', 'pho', 'ramen', 'spaghetti_bolognese', 'spaghetti_carbonara']
+```
+With 5 classes, I have 5000 images total. `train.json` and `test.json` splitted into 3750 and 1250 respectively.
+
+## Training Approach:
 I built a SVM classification with two approach: 
-####Histogram of Oriented Gradients (HOG)
-![hog]()
-####Transfer learning. 
+#### Histogram of Oriented Gradients (HOG)
+<img src="https://github.com/Insignite/SVM-Food101-Classification/blob/master/img/hog.PNG" height="70%" width="70%">
+By using HOG, it shows that HOG image able the keep the shape of objects very well which allow for an edge detection. The input images will get reshape to 92x92x3 or 128x128x3 (Higher amount of pixel make my laptop much slower for training yet increase the accuracy). 
 
-I want to build a simple Deep Learning model for image classification on Kaggle Dog vs. Cat Dataset. In this project, I decided to use AlexNet architecture as it repeatedly mention during my Machine Learning course. This project is simple enough that helps me understand Alexnet, familiarize with Keras, and gain more experience in ML field.
+#### Transfer learning.
+<img src="https://github.com/Insignite/SVM-Food101-Classification/blob/master/img/AlexNet.png" height="70%" width="70%">
+Transfer learning technique is a method that use pre-trained model to build a new custom model or perform feature extraction. In this project, I will use an pre-trained **AlexNet** model from my teammate for feature extraction. AlexNet input is always 227x227x3 so I will reshape all image to this dimension. I built a new model with all layers of my teammate AlexNet untill *flatten layer* (Displayed in figure), which give output of 5x5x256 = 6400 training features.
+
+## Training parameters
+SVM have tree important parameters we should wary about: Kernel type, C and g (C and g explaination in **Introduction** section). Kernel
+type is very much depend if the data points is linear seperable. Let's plot 151 images with their first 2 features out of 6400 features into different kernel of SVM. All three plot will have C = 0.5 and g = 2.  
+<img src="https://github.com/Insignite/SVM-Food101-Classification/blob/master/img/kernel.png" height="70%" width="70%">
+It seems like the data points able to classify decently well with all three kernels, but this is only the first 2 features. What if we plot all 6400 features? There will definitely on kernel out perform another. I'd love to able to graph 6400 features but that will be so complicate to do so. There are still C and g that I can adjust to optimize the hyperplane. Let's take a look of various C and g plot.
