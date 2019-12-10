@@ -1,5 +1,7 @@
 # SVM Food-101 Dataset Classification
 
+**Ipython notebook will be upload shorty when I have time to clean the code**
+
 This project is my part taken from the main project github [food_classification](https://github.com/floxyao/food_classification). I've done two deep learning algorithm, [SSD Inception v2 for Card 9-A Object Detection](https://github.com/Insignite/TensorFlow-Object-Detection-API) and [AlexNet architecture for DogvsCat Classification](https://github.com/Insignite/Alexnet-DogvsCat-Classification), so I would like to dive deeper into Machine learning field by working on an algorithm even earlier than AlexNet. Support Vector Machines (SVM) for multiclasses classification seems fun so I decided to go with it.
 
 ## Introduction
@@ -75,7 +77,7 @@ edamame		    omelette
 ```
 
 ### Dataset Approach
-In this project, I will only do classification for noodle as I have limited resource for training and testing. There are 5 noodle classes total:
+In this project, I will only do classification for noodle classes as I have limited resource for training and testing. There are 5 noodle classes total:
 ```
 ['pad_thai', 'pho', 'ramen', 'spaghetti_bolognese', 'spaghetti_carbonara']
 ```
@@ -111,7 +113,7 @@ Train Dataframe
 
 [3750 rows x 2 columns]
 
-HOG Train Feature Shape
+HOG Train Feature Shape with PCA
 (3750, 1942)
 Transfer Learning Train Feature Shape
 (3750, 6400)
@@ -120,12 +122,12 @@ Transfer Learning Train Feature Shape
 ### Training Approach
 I built a SVM classification with two approach: 
 #### Histogram of Oriented Gradients (HOG)
-<img src="https://github.com/Insignite/SVM-Food101-Classification/blob/master/img/hog.PNG" height="70%" width="70%">
+<img src="https://github.com/Insignite/SVM-Food101-Classification/blob/master/img/hog.PNG" height="80%" width="80%">
 
 By using HOG, it shows that HOG image able the keep the shape of objects very well which allow for an edge detection. The input images will get reshape to 227x227x3 (Higher amount of pixel input makes training much slower yet increase the accuracy). I also applied Principal Component Analysis (PCA). It is a method used to reduce number of features (aka reduction in dimensions) in the data by extracting the important data points while retaining as much information as possible. 
 
 #### Transfer learning
-<img src="https://github.com/Insignite/SVM-Food101-Classification/blob/master/img/AlexNet.png" height="70%" width="70%">
+<img src="https://github.com/Insignite/SVM-Food101-Classification/blob/master/img/AlexNet.png" height="90%" width="90%">
 
 Transfer learning technique is a method that use pre-trained model to build a new custom model or perform feature extraction. In this project, I will use an pre-trained **AlexNet** model from my teammate for feature extraction. AlexNet input is always 227x227x3 so I will reshape all image to this dimension. I built a new model with all layers of my teammate AlexNet untill *flatten layer* (Displayed in figure), which give output of 5x5x256 = 6400 training features.
 
@@ -135,7 +137,7 @@ type is very much depend if the data points is linear seperable. Let's plot 151 
 
 <img src="https://github.com/Insignite/SVM-Food101-Classification/blob/master/img/kernel.png" height="70%" width="70%">
 
-It seems like the data points able to classify decently well with all three kernels, but this is only the first 2 features. What if we plot all 6400 features? There will definitely an kernel out perform others. I'd love to able to graph 6400 features but that will be so complicate to do so. There are still C and g that I can adjust to optimize the hyperplane. Let's take a look of various C and g plot.
+It seems like the data points able to classify decently well with all three kernels, but this is only the first 2 features. What if we plot all 6400 features? There will definitely an kernel out perform others.There are still C and g that I can adjust to optimize the hyperplane. Let's take a look of various C and g plot.
 
 <figure>
   <a href= "https://medium.com/all-things-ai/in-depth-parameter-tuning-for-svc-758215394769">
@@ -148,14 +150,14 @@ It seems like the data points able to classify decently well with all three kern
 
 (Image source: [In depth: Parameter tuning for SVM](https://medium.com/all-things-ai/in-depth-parameter-tuning-for-svc-758215394769) )
 
-With so many way C and g can tune the heperplane, how can we find the optimal combination? Let's do something called Grid searching, essentially is running cross validation for all possible combination of Kernel, C, and g on certain range. According to [A Practical Guide to Support Vector Classification](https://www.csie.ntu.edu.tw/~cjlin/papers/guide/guide.pdf) paper, exponential growing of C and g give the best result. I will use the paper recommended range C = 2<sup>-5</sup>, 2<sup>-3</sup>, ... ,2<sup>15</sup> and g = 2<sup>-15</sup>, 2<sup>-13</sup>, ... , 2<sup>3</sup>. With all three parameters, I able to create 396 combinations. Below if a sample of some combination runs.
+With so many way C and g can tune the hyperplane, how can we find the optimal combination? Let's do something called Grid searching, essentially is running cross validation for all possible combination of Kernel, C, and g on certain range. According to [A Practical Guide to Support Vector Classification](https://www.csie.ntu.edu.tw/~cjlin/papers/guide/guide.pdf) paper, exponential growing of C and g give the best result. I will use the paper recommended range C = 2<sup>-5</sup>, 2<sup>-3</sup>, ... ,2<sup>15</sup> and g = 2<sup>-15</sup>, 2<sup>-13</sup>, ... , 2<sup>3</sup>. With all three parameters, I able to create 396 combinations. Below if a sample of small combination runs.
 
 <img src="https://github.com/Insignite/SVM-Food101-Classification/blob/master/img/grid_search.PNG" height="45%" width="35%">
 
 After 396 cross validations run with different parameters, the parameter with highest accuracy is Kernel = Linear, C = 0.5, and g = 2. Now we are ready to train our model.
 
 ### Training Model
-I initally use Scikit-Learn to train an SVM model, but it takes extremely long for unknown reason. Till this day I still don't know. Stumble upon an suggestion, I switched over to [LIBSVM](https://www.csie.ntu.edu.tw/~cjlin/libsvm/) and able to increase training time significantly.
+I initally use Scikit-Learn to train an SVM model, but it takes extremely long for unknown reason. Till this day I still don't know why. Stumble upon an suggestion, I switched over to [LIBSVM](https://www.csie.ntu.edu.tw/~cjlin/libsvm/) and able to increase training time significantly.
 
 ## Result
 ### Histogram of Oriented Gradients (HOG)
@@ -168,7 +170,7 @@ I initally use Scikit-Learn to train an SVM model, but it takes extremely long f
 - Cross Validation Accuracy: 57%
 - Test Accuracy: 68.2%
 ```
-<img src="https://github.com/Insignite/SVM-Food101-Classification/blob/master/img/result.PNG" height="70%" width="70%">
+<img src="https://github.com/Insignite/SVM-Food101-Classification/blob/master/img/result.PNG">
 
 ### Conclusion
 HOG approach have a much higher accuracy compare to Transfer learning approach. This is within my expectation because Transfer learning on AlexNet model required input image to go through a series of filters, which lead to loss of detail and reduction in features. My prediction is that if Transfer learning approach taking earlier layers, rather than taken up to the last Convolutional layer of AlexNet, the accuracy would be better because layers toward beginning of AlexNet architecture given much more features then later layers.
