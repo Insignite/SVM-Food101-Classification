@@ -137,8 +137,6 @@ type is very much depend if the data points is linear seperable. Let's plot 151 
 
 It seems like the data points able to classify decently well with all three kernels, but this is only the first 2 features. What if we plot all 6400 features? There will definitely an kernel out perform others. I'd love to able to graph 6400 features but that will be so complicate to do so. There are still C and g that I can adjust to optimize the hyperplane. Let's take a look of various C and g plot.
 
-(Image source: [In depth: Parameter tuning for SVM](https://medium.com/all-things-ai/in-depth-parameter-tuning-for-svc-758215394769) )
-
 <figure>
   <a href= "https://medium.com/all-things-ai/in-depth-parameter-tuning-for-svc-758215394769">
     <img src="https://github.com/Insignite/SVM-Food101-Classification/blob/master/img/gamma_sample.PNG" title="Source: In depth: Parameter tuning for SVM">
@@ -147,6 +145,8 @@ It seems like the data points able to classify decently well with all three kern
     <img src="https://github.com/Insignite/SVM-Food101-Classification/blob/master/img/c_sample.PNG" title="Source: In depth: Parameter tuning for SVM">
   </a>
   </figure>
+
+(Image source: [In depth: Parameter tuning for SVM](https://medium.com/all-things-ai/in-depth-parameter-tuning-for-svc-758215394769) )
 
 With so many way C and g can tune the heperplane, how can we find the optimal combination? Let's do something called Grid searching, essentially is running cross validation for all possible combination of Kernel, C, and g on certain range. According to [A Practical Guide to Support Vector Classification](https://www.csie.ntu.edu.tw/~cjlin/papers/guide/guide.pdf) paper, exponential growing of C and g give the best result. I will use the paper recommended range C = 2<sup>-5</sup>, 2<sup>-3</sup>, ... ,2<sup>15</sup> and g = 2<sup>-15</sup>, 2<sup>-13</sup>, ... , 2<sup>3</sup>. With all three parameters, I able to create 396 combinations. Below if a sample of some combination runs.
 
