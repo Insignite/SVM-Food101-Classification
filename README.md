@@ -4,6 +4,9 @@ This project is my part taken from the main project github [food_classification]
 
 ## Introduction
 <img src="https://github.com/Insignite/SVM-Food101-Classification/blob/master/img/svm_sample.png" height="70%" width="70%">
+
+(Image source: [Support Vector Machine vs Logistic Regression](https://towardsdatascience.com/support-vector-machine-vs-logistic-regression-94cc2975433f) )
+
 **Support Vector Machines (SVM)** is a supervised learning model with associated algorithms that analyzes data by plotting data points on N-dimensionals graph (N is the number of features) and performs classification by drawing an optimal hyperplane. Data points that closer to the hyperplane influence the position and the orientation of the hyperplane. With this information, we can optimize the hyperplane by fine tuning **Cost (C)** and **Gradient (g = gamma substitute variable)**. Large **C** decreases the margin of the hyperplane, which allow much less misclassified points and lead to hyperplane attemp to fit as many point as possible, where as small **C** allows more generalization and smoother hyperplane. For **g**, a higher value leads to a lower Ecludien distance between data points and scale down fit area.
 
 
@@ -77,7 +80,9 @@ In this project, I will only do classification for noodle as I have limited reso
 ['pad_thai', 'pho', 'ramen', 'spaghetti_bolognese', 'spaghetti_carbonara']
 ```
 With 5 classes, I have 5000 images total. `train.json` and `test.json` splitted into 3750 and 1250 respectively.
+
 Let's load in the data through `train.json`. But first let's look at how the data labeled.
+
 **(Below is a very small scale of train.json content for ONLY 5 classes I am targeting. Original train.json will have all 101 classes)**
 ```
 {
@@ -116,10 +121,12 @@ Transfer Learning Train Feature Shape
 I built a SVM classification with two approach: 
 #### Histogram of Oriented Gradients (HOG)
 <img src="https://github.com/Insignite/SVM-Food101-Classification/blob/master/img/hog.PNG" height="70%" width="70%">
-By using HOG, it shows that HOG image able the keep the shape of objects very well which allow for an edge detection. The input images will get reshape to 92x92x3 or 128x128x3 (Higher amount of pixel make my laptop much slower for training yet increase the accuracy). I also applied Principal Component Analysis (PCA). It is a method used to reduce number of features (aka reduction in dimensions) in the data by extracting the important data points while retaining as much information as possible. 
+
+By using HOG, it shows that HOG image able the keep the shape of objects very well which allow for an edge detection. The input images will get reshape to 227x227x3 (Higher amount of pixel input makes training much slower yet increase the accuracy). I also applied Principal Component Analysis (PCA). It is a method used to reduce number of features (aka reduction in dimensions) in the data by extracting the important data points while retaining as much information as possible. 
 
 #### Transfer learning
 <img src="https://github.com/Insignite/SVM-Food101-Classification/blob/master/img/AlexNet.png" height="70%" width="70%">
+
 Transfer learning technique is a method that use pre-trained model to build a new custom model or perform feature extraction. In this project, I will use an pre-trained **AlexNet** model from my teammate for feature extraction. AlexNet input is always 227x227x3 so I will reshape all image to this dimension. I built a new model with all layers of my teammate AlexNet untill *flatten layer* (Displayed in figure), which give output of 5x5x256 = 6400 training features.
 
 ### Training parameters
@@ -127,7 +134,9 @@ SVM have tree important parameters we should wary about: Kernel type, C and g (C
 type is very much depend if the data points is linear seperable. Let's plot 151 images with their first 2 features out of 6400 features into different kernel of SVM. All three plot will have C = 0.5 and g = 2.
 
 <img src="https://github.com/Insignite/SVM-Food101-Classification/blob/master/img/kernel.png" height="70%" width="70%">
+
 It seems like the data points able to classify decently well with all three kernels, but this is only the first 2 features. What if we plot all 6400 features? There will definitely an kernel out perform others. I'd love to able to graph 6400 features but that will be so complicate to do so. There are still C and g that I can adjust to optimize the hyperplane. Let's take a look of various C and g plot.
+
 (Image source: [In depth: Parameter tuning for SVM](https://medium.com/all-things-ai/in-depth-parameter-tuning-for-svc-758215394769) )
 
 <figure>
