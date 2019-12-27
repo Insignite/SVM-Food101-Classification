@@ -1,7 +1,5 @@
 # SVM Food-101 Dataset Classification
 
-**Ipython notebook will be upload shorty when I have time to clean the code**
-
 This project is my part taken from the main project github [food_classification](https://github.com/floxyao/food_classification). I've done two deep learning algorithm, [SSD Inception v2 for Card 9-A Object Detection](https://github.com/Insignite/TensorFlow-Object-Detection-API) and [AlexNet architecture for DogvsCat Classification](https://github.com/Insignite/Alexnet-DogvsCat-Classification), so I would like to dive deeper into Machine learning field by working on an algorithm even earlier than AlexNet. Support Vector Machines (SVM) for multiclasses classification seems fun so I decided to go with it.
 
 ## Introduction
